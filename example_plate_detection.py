@@ -14,6 +14,7 @@ if __name__ == '__main__':
 	parser.add_argument('-i' 		,'--image'			,type=str   , default = 'images\\example_aolp_fullimage.jpg'		,help='Input Image')
 	parser.add_argument('-v' 		,'--vtype'			,type=str   , default = 'fullimage'		,help = 'Image type (car, truck, bus, bike or fullimage)')
 	parser.add_argument('-t' 		,'--lp_threshold'	,type=float   , default = 0.35		,help = 'Detection Threshold')
+	parser.add_argument('-m' 		,'--model'	,type=float   , default = 0.35		,help = 'Model Path')
 
 	#parser.add_argument('-tr'		,'--train-dir'		,type=str   , required=True		,help='Input data directory for training')
 	args = parser.parse_args()
@@ -28,7 +29,7 @@ if __name__ == '__main__':
 	#
 	#  Loads network and weights
 	#
-	iwpod_net = load_model('weights/iwpod_net')
+	iwpod_net = load_model(args.model)
 	
 
 	#
@@ -85,11 +86,11 @@ if __name__ == '__main__':
 		#
 		#  Shows each detected LP
 		#
-		cv2.imshow('Rectified plate %d'%i, img )
+		#cv2.imshow('Rectified plate %d'%i, img )
 	#
 	#  Shows original image with deteced plates (quadrilateral)
 	#
-	cv2.imshow('Image and LPs', Ivehicle )
+	cv2.imwrite('output.jpg', Ivehicle )
 	cv2.waitKey()
 	cv2.destroyAllWindows()
 	
