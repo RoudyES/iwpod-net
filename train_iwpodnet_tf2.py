@@ -225,4 +225,7 @@ if __name__ == '__main__':
 	#
 	print ('Saving model (%s)' % model_path_final)
 	model.save_weights(model_path_final + '.h5', save_format  ='h5')
+	model_json = model.to_json()
+	with open(model_path_final + '.json', "w") as json_file:
+		json_file.write(model_json)
 	model.save(model_path_final)
