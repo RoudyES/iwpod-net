@@ -300,7 +300,7 @@ def nms(Labels,iou_threshold=.5):
 
 
 def image_files_from_folder(folder,upper=True):
-	extensions = ['jpg','jpeg','png']
+	extensions = ['jpg','jpeg','png','Jpeg','JPEG','Jpg','JPG','Png','PNG']
 	img_files  = []
 	for ext in extensions:
 		img_files += glob('%s/*.%s' % (folder,ext))
