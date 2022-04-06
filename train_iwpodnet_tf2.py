@@ -95,6 +95,7 @@ if __name__ == '__main__':
 	parser.add_argument('-bs'		,'--batch-size'			,type=int   , default = 52						,help='Mini-batch size (default = 64)')
 	parser.add_argument('-lr'		,'--learning-rate'		,type=float , default = 0.001					,help='Learning rate (default = 0.001)')
 	parser.add_argument('-se'		,'--save-epochs'		,type = int , default = 2000					,help='Freqnecy for saving checkpoints (in epochs) ')
+	parser.add_argument('-size'		,'--image-size'		,type = int , default = 208					,help='Image size when training ')
 	args = parser.parse_args()
 	
 
@@ -118,7 +119,7 @@ if __name__ == '__main__':
 	#
 	#  Additional parameters
 	#
-	dim = 208 # spatial dimension of images in training stage
+	dim = args.image_size # spatial dimension of images in training stage
 	opt = Adam(learning_rate = learning_rate) # Optimizer -- can change
 
 	
@@ -147,11 +148,16 @@ if __name__ == '__main__':
 	for file in Files:
 		labfile = splitext(file)[0] + '.txt'
 		if isfile(labfile):
-			ann_files += 1
-			L = readShapes(labfile)
 			I = cv2.imread(file)
+			if I.shape[0] < 80:
+				continue
+			if I.shape[1] < 80:
+				continue
+
+			L = readShapes(labfile)
 			if len(L) > 0:
 				Data.append([I, L])
+			ann_files += 1
 		else:
 			#
 			#  Appends a "fake"  plate to images without any annotation
