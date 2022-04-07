@@ -14,7 +14,7 @@ if __name__ == '__main__':
 	parser.add_argument('-i' 		,'--image'			,type=str   , default = 'images\\example_aolp_fullimage.jpg'		,help='Input Image')
 	parser.add_argument('-v' 		,'--vtype'			,type=str   , default = 'fullimage'		,help = 'Image type (car, truck, bus, bike or fullimage)')
 	parser.add_argument('-t' 		,'--lp_threshold'	,type=float   , default = 0.35		,help = 'Detection Threshold')
-	parser.add_argument('-m' 		,'--model'	,type=float   , default = 0.35		,help = 'Model Path')
+	parser.add_argument('-m' 		,'--model'	,type=str   , default = 0.35		,help = 'Model Path')
 
 	#parser.add_argument('-tr'		,'--train-dir'		,type=str   , required=True		,help='Input data directory for training')
 	args = parser.parse_args()

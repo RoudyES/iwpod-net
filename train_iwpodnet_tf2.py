@@ -132,6 +132,7 @@ if __name__ == '__main__':
 	#   Loads model with pre-trained weights - if present
 	#
 	model, model_stride, xshape, yshape = load_network(modelname, dim)
+	print(model_stride)
 	model_path_final  = '%s/%s'  % (modeldir, netname)
 
 	#
