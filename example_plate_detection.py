@@ -5,6 +5,7 @@ from src.keras_utils import  detect_lp_width
 from src.utils 					import  im2single
 from src.drawing_utils			import draw_losangle
 import argparse
+import tensorflow as tf
 
 
 
@@ -29,7 +30,8 @@ if __name__ == '__main__':
 	#
 	#  Loads network and weights
 	#
-	iwpod_net = load_model(args.model)
+	#iwpod_net = load_model(args.model)
+	iwpod_net = tf.keras.models.load_model(args.model)
 	
 
 	#
@@ -76,13 +78,13 @@ if __name__ == '__main__':
 	#
 	#  Runs IWPOD-NET. Returns list of LP data and cropped LP images
 	#
-	Llp, LlpImgs,_ = detect_lp_width(iwpod_net, im2single(Ivehicle), WPODResolution*ASPECTRATIO, 2**4, lp_output_resolution, lp_threshold)
-	for i, img in enumerate(LlpImgs):
-		#
+	res,_ = detect_lp_width(iwpod_net, im2single(Ivehicle), WPODResolution*ASPECTRATIO, 2**4, lp_output_resolution, lp_threshold)
+	for j in range(3):
+		for i, img in enumerate(res[j+i+1]):
 		#  Draws LP quadrilateral in input image
 		#
-		pts = Llp[i].pts * iwh
-		draw_losangle(Ivehicle, pts, color = (0,0,255.), thickness = 2)
+			pts = res[j+i][i].pts * iwh
+			draw_losangle(Ivehicle, pts, color = (0,0,j*85.), thickness = 2)
 		#
 		#  Shows each detected LP
 		#
@@ -93,7 +95,5 @@ if __name__ == '__main__':
 	cv2.imwrite('output.jpg', Ivehicle )
 	cv2.waitKey()
 	cv2.destroyAllWindows()
-	
 
- 
 
