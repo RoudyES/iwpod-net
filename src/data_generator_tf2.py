@@ -49,8 +49,8 @@ class ALPRDataGenerator(keras.utils.Sequence):
         X = np.empty((self.batch_size, self.dim, self.dim, 3))
         fpnOutput = [self.dim//res for res in self.strides]
         finalDim = fpnOutput[0]**2 + fpnOutput[1]**2 + fpnOutput[2]**2
-        y = np.empty((self.batch_size, finalDim, 9))
-        y = y.reshape((self.batch_size,-1,-1,9))
+        y = np.empty((self.batch_size, 1))
+        #y = y.reshape((self.batch_size,-1,-1,9))
         #y = np.empty((self.batch_size, self.dim//self.stride, self.dim//self.stride, 9))
         # Generate data
         for i, idx in enumerate(indexes):
@@ -59,8 +59,8 @@ class ALPRDataGenerator(keras.utils.Sequence):
             YY = []
             for stride in self.strides:
                 temp = labels2output_map(llp, ptslist, self.dim, stride, alfa = 0.5)
-                YY.append(temp.reshape((-1,9)))
-            YY = YY.reshape((-1,-1,9))
+                YY.append(temp)
+            #YY = YY.reshape((-1,-1,9))
             print(YY.shape)
             X[i,] = XX*self.OutputScale
             y[i,] = YY

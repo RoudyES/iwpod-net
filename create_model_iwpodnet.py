@@ -87,10 +87,10 @@ class IWpod_Net(tf.keras.Model):
 		features = self.fpn(image, training=training)
 		box_outputs = []
 		for feature in features:
-			box_outputs.append(tf.reshape(build_head(feature), [tf.shape(image)[0], -1, 7]))
+			box_outputs.append(tf.reshape(build_head(feature), [tf.shape(image)[0], feature.shape[1] * feature.shape[2], 7]))
 
-		box_outputs = tf.concat(box_outputs, axis=1)
-		tf.reshape(box_outputs, [tf.shape(image)[0], -1, -1, 7])
+		#box_outputs = tf.concat(box_outputs, axis=1)
+		#tf.reshape(box_outputs, [tf.shape(image)[0], -1, -1, 7])
 		return box_outputs
 
 
