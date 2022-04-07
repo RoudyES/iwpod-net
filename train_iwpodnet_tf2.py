@@ -158,12 +158,12 @@ if __name__ == '__main__':
 			if len(L) > 0:
 				Data.append([I, L])
 			ann_files += 1
-		else:
+		#else:
 			#
 			#  Appends a "fake"  plate to images without any annotation
 			#
-			I = cv2.imread(file)
-			Data.append(  [I, [fakeshape] ]  )
+		#	I = cv2.imread(file)
+		#	Data.append(  [I, [fakeshape] ]  )
 
 	print ('%d images with labels found' % len(Data) )
 	print ('%d annotation files found' % ann_files )
