@@ -91,6 +91,7 @@ if __name__ == '__main__':
 	parser.add_argument('-cm' 		,'--cur_model'			,type=str   , default = 'fake_name'			,help='Pre-trained model')
 	parser.add_argument('-n' 		,'--name'				,type=str   , default = 'iwpodnet_retrained'	,help='Output model name')
 	parser.add_argument('-tr'		,'--train-dir'			,type=str   , default = 'train_dir'			,help='Input data directory for training')
+	parser.add_argument('-val'		,'--val-dir'			,type=str   , default = 'val'			,help='Input data directory for validation')
 	parser.add_argument('-e'		,'--epochs'				,type=int   , default = 60000					,help='Number of epochs (default = 1.500)')
 	parser.add_argument('-bs'		,'--batch-size'			,type=int   , default = 52						,help='Mini-batch size (default = 64)')
 	parser.add_argument('-lr'		,'--learning-rate'		,type=float , default = 0.001					,help='Learning rate (default = 0.001)')
@@ -113,6 +114,7 @@ if __name__ == '__main__':
 	train_dir = args.train_dir
 	modeldir = args.model_dir
 	train_dir = args.train_dir 
+	val_dir = args.val_dir
 	
 	modelname = '%s/%s'  % (modeldir, args.cur_model)
 	
@@ -137,6 +139,7 @@ if __name__ == '__main__':
 	#
 	print ('Loading training data...')
 	Files = image_files_from_folder(train_dir)
+	FilesVal = image_files_from_folder(val_dir)
 	
 	#
 	#  Defines size of "fake" tiny LP annotation, used when no LP is present
@@ -144,7 +147,9 @@ if __name__ == '__main__':
 	fakepts = np.array([[0.5, 0.5001, 0.5001, 0.5], [0.5, 0.5, 0.5001, 0.5001]])
 	fakeshape = Shape(fakepts)
 	Data = []
+	DataVal = []
 	ann_files = 0
+	ann_filesVal = 0
 	for file in Files:
 		labfile = splitext(file)[0] + '.txt'
 		if isfile(labfile):
@@ -158,6 +163,19 @@ if __name__ == '__main__':
 			if len(L) > 0:
 				Data.append([I, L])
 			ann_files += 1
+	for file in FilesVal:
+		labfile = splitext(file)[0] + '.txt'
+		if isfile(labfile):
+			I = cv2.imread(file)
+			if I.shape[0] < 80:
+				continue
+			if I.shape[1] < 80:
+				continue
+
+			L = readShapes(labfile)
+			if len(L) > 0:
+				DataVal.append([I, L])
+			ann_filesVal += 1
 		#else:
 			#
 			#  Appends a "fake"  plate to images without any annotation
@@ -167,11 +185,14 @@ if __name__ == '__main__':
 
 	print ('%d images with labels found' % len(Data) )
 	print ('%d annotation files found' % ann_files )
+	print ('%d validation images with labels found' % len(DataVal) )
+	print ('%d validation annotation files found' % ann_filesVal )
 
 	#
 	#  Training generator with lots of data augmentation	
 	#
 	train_generator = ALPRDataGenerator(Data, batch_size = batch_size, dim =  dim, stride = int(model_stride), shuffle=True, OutputScale = 1.0)
+	val_generator = ALPRDataGenerator(DataVal, batch_size = batch_size, dim =  dim, stride = int(model_stride), shuffle=True, OutputScale = 1.0)
 
 	#
 	#  Compiles Model
@@ -209,6 +230,7 @@ if __name__ == '__main__':
 	                      steps_per_epoch = np.floor(len(Data)/batch_size),
 	                      epochs = MaxEpochs, 
 	                      verbose = 1,
+	                      validation_data = val_generator,
 	                      callbacks=[learn_control, ckpt])  
 
 
