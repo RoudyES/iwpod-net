@@ -22,14 +22,16 @@ def conv_batch(_input,fsz,csz,activation='relu',padding='same',strides=(1,1)):
 	return output
 
 
-def build_head(x):
-	xprobs    = conv_batch(x, 64, 3, activation='relu')
+def build_head():
+	inputLayer = tf.keras.Input(shape=[None, None, 256])
+	xprobs    = conv_batch(inputLayer, 64, 3, activation='relu')
 	xprobs    = conv_batch(xprobs, 32, 3, activation='linear')
 	xprobs    = Conv2D(1, 3, activation='sigmoid', padding='same',  kernel_initializer = 'he_uniform')(xprobs)
-	xbbox    = conv_batch(x, 64, 3, activation='relu')
+	xbbox    = conv_batch(inputLayer, 64, 3, activation='relu')
 	xbbox    = conv_batch(xbbox, 32, 3, activation='linear')
 	xbbox     = Conv2D(6, 3, activation='linear' , padding='same',  kernel_initializer = 'he_uniform')(xbbox)
-	return Concatenate(3)([xprobs,xbbox])
+	concat = Concatenate(3)([xprobs,xbbox])
+	return tf.keras.Model(inputs=inputLayer, outputs=concat)
 
 def get_backbone(name='ResNet50'):
 	outs=[]
@@ -74,20 +76,21 @@ class FeaturePyramid(tf.keras.layers.Layer):
 		p3_output = self.conv_c3_3x3(p3_output)
 		p4_output = self.conv_c4_3x3(p4_output)
 		p5_output = self.conv_c5_3x3(p5_output)
-		p6_output = self.conv_c6_3x3(c5_output)
-		p7_output = self.conv_c7_3x3(tf.nn.relu(p6_output))
+		#p6_output = self.conv_c6_3x3(c5_output)
+		#p7_output = self.conv_c7_3x3(tf.nn.relu(p6_output))
 		return p3_output, p4_output, p5_output
 
 class IWpod_Net(tf.keras.Model):
 	def __init__(self, backboneName='ResNet50', **kwargs):
 		super(IWpod_Net, self).__init__(name="IWpod_Net", **kwargs)
 		self.fpn = FeaturePyramid(backboneName)
+		self.head = build_head()
 
 	def call(self, image, training=False):
 		features = self.fpn(image, training=training)
 		box_outputs = []
 		for feature in features:
-			box_outputs.append(tf.reshape(build_head(feature), [tf.shape(image)[0], feature.shape[1] * feature.shape[2], 7]))
+			box_outputs.append(self.head(feature))
 
 		#box_outputs = tf.concat(box_outputs, axis=1)
 		#tf.reshape(box_outputs, [tf.shape(image)[0], -1, -1, 7])
