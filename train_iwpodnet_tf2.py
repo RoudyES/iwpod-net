@@ -192,8 +192,8 @@ if __name__ == '__main__':
 	#
 	#  Training generator with lots of data augmentation	
 	#
-	train_generator = ALPRDataGenerator(Data, batch_size = batch_size, dim =  dim, stride = [8,16,32], shuffle=True, OutputScale = 1.0)
-	val_generator = ALPRDataGenerator(DataVal, batch_size = batch_size, dim =  dim, stride = [8,16,32], shuffle=True, OutputScale = 1.0)
+	train_generator = ALPRDataGenerator(Data, batch_size = batch_size, dim =  dim, strides = [8,16,32], shuffle=True, OutputScale = 1.0)
+	val_generator = ALPRDataGenerator(DataVal, batch_size = batch_size, dim =  dim, strides = [8,16,32], shuffle=True, OutputScale = 1.0)
 
 	#
 	#  Compiles Model

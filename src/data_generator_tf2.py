@@ -1,3 +1,4 @@
+import enum
 import numpy as np
 
 from tensorflow import keras
@@ -9,7 +10,8 @@ from src.sampler import augment_sample, labels2output_map
 
 class ALPRDataGenerator(keras.utils.Sequence):
     'Generates data for Keras'
-    def __init__(self, data, batch_size=32, dim =  208, strides = [8,16,32], shuffle=True, OutputScale = 1.0):
+
+    def __init__(self, data, batch_size=32, dim=208, strides=[8, 16, 32], shuffle=True, OutputScale=1.0):
         'Initialization'
         self.dim = dim
         self.strides = strides
@@ -25,7 +27,7 @@ class ALPRDataGenerator(keras.utils.Sequence):
 
     def __getitem__(self, index):
         'Generate one batch of data'
-		
+
         # Generate indexes of the batch
         indexes = self.indexes[index*self.batch_size:(index+1)*self.batch_size]
 
@@ -37,31 +39,43 @@ class ALPRDataGenerator(keras.utils.Sequence):
     def on_epoch_end(self):
         'Updates indexes after each epoch. Pads training data to be a multiple of batch size'
 #        self.indexes = list(np.arange(0, len(self.data), 1))
-        self.indexes = list(np.arange(0, len(self.data), 1)) 
+        self.indexes = list(np.arange(0, len(self.data), 1))
         self.indexes += list(np.random.choice(self.indexes, self.batch_size - len(self.data) % self.batch_size))
         if self.shuffle == True:
             np.random.shuffle(self.indexes)
 
-
     def __data_generation(self, indexes):
-        'Generates data containing batch_size samples' # X : (n_samples, *dim, n_channels)
+        # X : (n_samples, *dim, n_channels)
+        'Generates data containing batch_size samples'
 
         X = np.empty((self.batch_size, self.dim, self.dim, 3))
         fpnOutput = [self.dim//res for res in self.strides]
         finalDim = fpnOutput[0]**2 + fpnOutput[1]**2 + fpnOutput[2]**2
-        y = np.empty((self.batch_size, 1))
+        y = []
         #y = y.reshape((self.batch_size,-1,-1,9))
         #y = np.empty((self.batch_size, self.dim//self.stride, self.dim//self.stride, 9))
         # Generate data
-        for i, idx in enumerate(indexes):
-            # Store sample
-            XX, llp, ptslist = augment_sample(self.data[idx][0], self.data[idx][1], self.dim)
-            YY = []
-            for stride in self.strides:
-                temp = labels2output_map(llp, ptslist, self.dim, stride, alfa = 0.5)
-                YY.append(temp)
-            #YY = YY.reshape((-1,-1,9))
-            print(YY.shape)
-            X[i,] = XX*self.OutputScale
-            y[i,] = YY
-        return X, y
+        for i, stride in enumerate(self.strides):
+            YY = np.empty((self.batch_size,fpnOutput[i],fpnOutput[i],9))
+            for j, idx in enumerate(indexes):
+                
+                XX, llp, ptslist = augment_sample(self.data[idx][0], self.data[idx][1], self.dim)
+                temp = labels2output_map(llp, ptslist, self.dim, stride, alfa=0.5)
+                YY[j, ] = temp
+                X[j, ] = XX*self.OutputScale
+
+            y.append(YY)
+                
+
+        #for i, idx in enumerate(indexes):
+        #    # Store sample
+        #    XX, llp, ptslist = augment_sample(self.data[idx][0], self.data[idx][1], self.dim)
+        #    YY = []
+        #    for stride in self.strides:
+        #        temp = labels2output_map(llp, ptslist, self.dim, stride, alfa=0.5)
+        #        YY.append(temp)
+        #    #YY = YY.reshape((-1,-1,9))
+        #    print(YY.shape)
+        #    X[i, ] = XX*self.OutputScale
+        #    y[i, ] = YY
+        return X, [*y]
