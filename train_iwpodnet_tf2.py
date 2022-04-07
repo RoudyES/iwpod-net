@@ -132,7 +132,7 @@ if __name__ == '__main__':
 	#   Loads model with pre-trained weights - if present
 	#
 	model, model_stride, xshape, yshape = load_network(modelname, dim)
-	print(model_stride)
+	#print(model_stride)
 	model_path_final  = '%s/%s'  % (modeldir, netname)
 
 	#
@@ -192,8 +192,8 @@ if __name__ == '__main__':
 	#
 	#  Training generator with lots of data augmentation	
 	#
-	train_generator = ALPRDataGenerator(Data, batch_size = batch_size, dim =  dim, stride = int(model_stride), shuffle=True, OutputScale = 1.0)
-	val_generator = ALPRDataGenerator(DataVal, batch_size = batch_size, dim =  dim, stride = int(model_stride), shuffle=True, OutputScale = 1.0)
+	train_generator = ALPRDataGenerator(Data, batch_size = batch_size, dim =  dim, stride = [8,16,32], shuffle=True, OutputScale = 1.0)
+	val_generator = ALPRDataGenerator(DataVal, batch_size = batch_size, dim =  dim, stride = [8,16,32], shuffle=True, OutputScale = 1.0)
 
 	#
 	#  Compiles Model

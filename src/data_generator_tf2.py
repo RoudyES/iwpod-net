@@ -9,10 +9,10 @@ from src.sampler import augment_sample, labels2output_map
 
 class ALPRDataGenerator(keras.utils.Sequence):
     'Generates data for Keras'
-    def __init__(self, data, batch_size=32, dim =  208, stride = 16, shuffle=True, OutputScale = 1.0):
+    def __init__(self, data, batch_size=32, dim =  208, strides = [8,16,32], shuffle=True, OutputScale = 1.0):
         'Initialization'
         self.dim = dim
-        self.stride = stride
+        self.strides = strides
         self.batch_size = batch_size
         self.data = data
         self.shuffle = shuffle
@@ -47,16 +47,20 @@ class ALPRDataGenerator(keras.utils.Sequence):
         'Generates data containing batch_size samples' # X : (n_samples, *dim, n_channels)
 
         X = np.empty((self.batch_size, self.dim, self.dim, 3))
-        #fpnOutput = [self.dim//res for res in self.strides]
-        #finalDim = fpnOutput[0]**2 + fpnOutput[1]**2 + fpnOutput[2]**2
-        #y = np.empty((self.batch_size, finalDim, 9))
-        #y = y.reshape((self.batch_size,-1,-1,9))
-        y = np.empty((self.batch_size, self.dim//self.stride, self.dim//self.stride, 9))
+        fpnOutput = [self.dim//res for res in self.strides]
+        finalDim = fpnOutput[0]**2 + fpnOutput[1]**2 + fpnOutput[2]**2
+        y = np.empty((self.batch_size, finalDim, 9))
+        y = y.reshape((self.batch_size,-1,-1,9))
+        #y = np.empty((self.batch_size, self.dim//self.stride, self.dim//self.stride, 9))
         # Generate data
         for i, idx in enumerate(indexes):
             # Store sample
             XX, llp, ptslist = augment_sample(self.data[idx][0], self.data[idx][1], self.dim)
-            YY = labels2output_map(llp, ptslist, self.dim, self.stride, alfa = 0.5)
+            YY = []
+            for stride in self.strides:
+                temp = labels2output_map(llp, ptslist, self.dim, stride, alfa = 0.5)
+                YY.append(temp.reshape((-1,9)))
+            YY = YY.reshape((-1,-1,9))
             print(YY.shape)
             X[i,] = XX*self.OutputScale
             y[i,] = YY
