@@ -94,11 +94,11 @@ def labels2output_map(labelist, lpptslist, dim, stride, alfa=0.75):
 	#	lpptslist
 	#
 	
-	dim0 = 208	# used to define the range of LP scales in the training procedure
+	#dim0 = 208	# used to define the range of LP scales in the training procedure
 	#
 	#  Aveage LP side in output layer (with spatial dimension outsize)
 	#
-	side = ((float(dim0) + 40.) / 2.) / stride  # 7.75 when dim = 208 and stride = 16
+	side = ((float(dim) + 40.) / 2.) / stride  # 7.75 when dim = 208 and stride = 16
 	outsize = int(dim / stride)
 	
 	#
@@ -347,12 +347,12 @@ def augment_sample(I, shapelist, dim, maxangle = 2 * np.array([65.,65.,55.]), ma
 		#
 		#  Width of LP in training image 
 		#
-		dim0 = 208 # augments data w.r.t. a fixed resolution
+		#dim0 = 208 # augments data w.r.t. a fixed resolution
 		
 		#
 		#  Defines range of LP widths w.r.t to baseline resolution dim0 = 208
 		#
-		wsiz = random.uniform(dim0*0.2, dim0*1.0)
+		wsiz = random.uniform(dim*0.2, dim*1.0)
 		
 		#
 		#  Defines height based on width and aspect ratio
