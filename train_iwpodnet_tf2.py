@@ -45,11 +45,11 @@ def lr_scheduler(ChangeEpoch = 20000, initial_lr = 1e-3):
 	return scheduler
 
 
-def load_network(modelpath, input_dim):
+def load_network(modelpath, input_dim, backbone):
 	#
 	#  Creates model topology
 	#
-	model = create_model_iwpodnet()
+	model = create_model_iwpodnet(backbone)
 	
 	#
 	#  Loads weights -- if they exist
@@ -117,6 +117,7 @@ if __name__ == '__main__':
 	modeldir = args.model_dir
 	train_dir = args.train_dir 
 	val_dir = args.val_dir
+	backboneName = args.backbone
 	dim = args.image_size # spatial dimension of images in training stage
 	
 	modelname = '%s/%s'  % (modeldir, args.cur_model)
@@ -127,7 +128,7 @@ if __name__ == '__main__':
 	#
 	#   Loads model with pre-trained weights - if present
 	#
-	model, model_stride, xshape, yshape = load_network(modelname, dim)
+	model, model_stride, xshape, yshape = load_network(modelname, dim, backboneName)
 	#model = create_model_iwpodnet()
 	#print(model_stride)
 	model_path_final  = '%s/%s'  % (modeldir, netname)
