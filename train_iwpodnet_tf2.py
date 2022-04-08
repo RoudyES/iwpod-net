@@ -118,20 +118,6 @@ if __name__ == '__main__':
 	
 	modelname = '%s/%s'  % (modeldir, args.cur_model)
 	
-	#
-	#  Additional parameters
-	#
-	dim = args.image_size # spatial dimension of images in training stage
-	lr_decayed_fn = tf.keras.optimizers.schedules.CosineDecay(learning_rate, MaxEpochs)
-	opt = Adam(learning_rate = lr_decayed_fn) # Optimizer -- can change
-
-	def get_lr_metric(optimizer):
-		def lr(y_true, y_pred):
-			return optimizer._decayed_lr(tf.float32) # I use ._decayed_lr method instead of .lr
-		return lr
-	
-	lr_metric = get_lr_metric(opt)
-	
 	if not isdir(modeldir):
 		makedirs(modeldir)
 	 
@@ -196,6 +182,20 @@ if __name__ == '__main__':
 	print ('%d annotation files found' % ann_files )
 	print ('%d validation images with labels found' % len(DataVal) )
 	print ('%d validation annotation files found' % ann_filesVal )
+
+	#
+	#  Additional parameters
+	#
+	dim = args.image_size # spatial dimension of images in training stage
+	lr_decayed_fn = tf.keras.optimizers.schedules.CosineDecay(learning_rate, MaxEpochs * (len(Data))//batch_size,)
+	opt = Adam(learning_rate = lr_decayed_fn) # Optimizer -- can change
+
+	def get_lr_metric(optimizer):
+		def lr(y_true, y_pred):
+			return optimizer._decayed_lr(tf.float32) # I use ._decayed_lr method instead of .lr
+		return lr
+	
+	lr_metric = get_lr_metric(opt)
 
 	#
 	#  Training generator with lots of data augmentation	
