@@ -1,9 +1,6 @@
-from black import out
-from regex import X
 from tensorflow.keras.layers import Conv2D, MaxPooling2D, BatchNormalization, Add, Activation, Concatenate, Input
 from tensorflow.keras.models import Model
 import tensorflow as tf
-from torch import xlogy
 
 
 def res_block(x,sz,filter_sz=3,in_conv_size=1):
