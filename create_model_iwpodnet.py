@@ -37,7 +37,7 @@ def get_backbone(name='ResNet50'):
 	backbone = None
 	if name == 'ResNet50':
 		backbone = tf.keras.applications.resnet50.ResNet50(
-			include_top=False, input_shape=[None, None, 3]
+			include_top=False, input_shape=[None, None, 3], weights=None
 		)
 		outs = [
 			backbone.get_layer("conv4_block6_out").output
@@ -45,7 +45,7 @@ def get_backbone(name='ResNet50'):
 
 	elif name == 'MobileNetV3Small':
 		backbone = tf.keras.applications.MobileNetV3Small(
-			include_top=False, input_shape=[None, None, 3], alpha=0.75
+			include_top=False, input_shape=[None, None, 3], alpha=0.75, weights=None
 		)
 		outs = [
 			backbone.layers[135].output
@@ -53,7 +53,7 @@ def get_backbone(name='ResNet50'):
 
 	elif name == 'MobileNetV3Large':
 		backbone = tf.keras.applications.MobileNetV3Large(
-			include_top=False, input_shape=[None, None, 3], alpha=0.75
+			include_top=False, input_shape=[None, None, 3], alpha=0.75, weights=None
 		)
 		outs = [
 			backbone.layers[198].output
