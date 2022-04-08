@@ -122,7 +122,8 @@ if __name__ == '__main__':
 	#  Additional parameters
 	#
 	dim = args.image_size # spatial dimension of images in training stage
-	opt = Adam(learning_rate = learning_rate) # Optimizer -- can change
+	lr_decayed_fn = tf.keras.optimizers.schedules.CosineDecay(learning_rate, MaxEpochs)
+	opt = Adam(learning_rate = lr_decayed_fn) # Optimizer -- can change
 
 	
 	if not isdir(modeldir):
@@ -233,7 +234,7 @@ if __name__ == '__main__':
 	                      epochs = MaxEpochs, 
 	                      verbose = 1,
 	                      validation_data = val_generator,
-	                      callbacks=[learn_control, ckpt])  
+	                      callbacks=[ckpt])  
 
 
 	print('Finished to train the model')
