@@ -28,6 +28,7 @@ from src.utils import image_files_from_folder
 from src.data_generator_tf2 import ALPRDataGenerator
 from create_model_iwpodnet import create_model_iwpodnet
 from tensorflow.keras.callbacks import LearningRateScheduler
+import multiprocessing
 
 
 #
@@ -232,7 +233,8 @@ if __name__ == '__main__':
 	                     patience = MaxEpochs//30,
 	                     restore_best_weights = False)
 	
-	
+	# Get number of cores in the system
+	cores = multiprocessing.cpu_count()
 	#
 	#  Trains model 
 	#
@@ -241,6 +243,7 @@ if __name__ == '__main__':
 	                      steps_per_epoch = np.floor(len(Data)/batch_size),
 	                      epochs = MaxEpochs, 
 	                      verbose = 1,
+						  workers = cores,
 	                      validation_data = val_generator,
 	                      callbacks=[ckpt])  
 
