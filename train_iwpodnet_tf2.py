@@ -125,6 +125,12 @@ if __name__ == '__main__':
 	lr_decayed_fn = tf.keras.optimizers.schedules.CosineDecay(learning_rate, MaxEpochs)
 	opt = Adam(learning_rate = lr_decayed_fn) # Optimizer -- can change
 
+	def get_lr_metric(optimizer):
+		def lr(y_true, y_pred):
+			return optimizer._decayed_lr(tf.float32) # I use ._decayed_lr method instead of .lr
+		return lr
+	
+	lr_metric = get_lr_metric(opt)
 	
 	if not isdir(modeldir):
 		makedirs(modeldir)
@@ -203,6 +209,7 @@ if __name__ == '__main__':
 	model.compile(
 	    loss = iwpodnet_loss,
 	    optimizer = opt,
+		metrics=[lr_metric],
 	    )
   
 	#
