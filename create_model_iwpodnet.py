@@ -2,6 +2,7 @@ from regex import X
 from tensorflow.keras.layers import Conv2D, MaxPooling2D, BatchNormalization, Add, Activation, Concatenate, Input
 from tensorflow.keras.models import Model
 import tensorflow as tf
+from torch import xlogy
 
 
 def res_block(x,sz,filter_sz=3,in_conv_size=1):
@@ -41,7 +42,7 @@ def get_backbone(name='ResNet50'):
 			include_top=False, input_shape=[None, None, 3]
 		)
 		outs = [
-			backbone.get_layer(layer_name).output for layer_name in ["conv3_block4_out", "conv4_block6_out", "conv5_block3_out"]
+			backbone.get_layer("conv4_block6_out").output
 		]
 	return tf.keras.Model(
 		inputs=backbone.inputs, outputs=outs
@@ -63,11 +64,13 @@ def buildFPN(input, backboneName='ResNet50'):
 
 def buildModel(backboneName='ResNet50'):
 	input_layer = Input(shape=(None,None,3),name='input')
-	p3_output, p4_output, p5_output = buildFPN(input_layer, backboneName)
-	p3_output = build_head(p3_output)
-	p4_output = build_head(p4_output)
-	p5_output = build_head(p5_output)
-	return tf.keras.Model(inputs=input_layer,outputs=[p3_output,p4_output,p5_output])
+	backbone = get_backbone(backboneName)
+	x = backbone(input_layer)
+	x = build_head(x)
+	#p3_output = build_head(p3_output)
+	#p4_output = build_head(p4_output)
+	#p5_output = build_head(p5_output)
+	return tf.keras.Model(inputs=input_layer,outputs=x)
 
 
 #class FeaturePyramid(tf.keras.layers.Layer):

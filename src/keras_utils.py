@@ -59,19 +59,15 @@ def detect_lp_width(model, I,  MAXWIDTH, net_step, out_size, threshold):
 	#
 	start 	= time.time()
 	Yr 		= model.predict(T)
-	Yr[0] 		= np.squeeze(Yr[0])
-	Yr[1] 		= np.squeeze(Yr[1])
-	Yr[2] 		= np.squeeze(Yr[2])
+	Yr 		= np.squeeze(Yr)
 	elapsed = time.time() - start
 
 	#
 	# "Decodes" network result to find the quadrilateral corners of detected plates 
 	#
-	L1,TLps1 = reconstruct_new (I, Iresized, Yr[0], out_size, threshold)
-	L2,TLps2 = reconstruct_new (I, Iresized, Yr[1], out_size, threshold)
-	L3,TLps3 = reconstruct_new (I, Iresized, Yr[2], out_size, threshold)
+	L,TLps = reconstruct_new (I, Iresized, Yr, out_size, threshold)
 
-	return [L1,TLps1,L2,TLps2,L3,TLps3],elapsed
+	return L,TLps,elapsed
 
 
 

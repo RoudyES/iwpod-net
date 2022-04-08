@@ -15,7 +15,7 @@ if __name__ == '__main__':
 	parser.add_argument('-i' 		,'--image'			,type=str   , default = 'images\\example_aolp_fullimage.jpg'		,help='Input Image')
 	parser.add_argument('-v' 		,'--vtype'			,type=str   , default = 'fullimage'		,help = 'Image type (car, truck, bus, bike or fullimage)')
 	parser.add_argument('-t' 		,'--lp_threshold'	,type=float   , default = 0.35		,help = 'Detection Threshold')
-	parser.add_argument('-m' 		,'--model'	,type=str   , default = 0.35		,help = 'Model Path')
+	parser.add_argument('-m' 		,'--model'	,type=str   , default = 'weights/my_trained_iwpod'		,help = 'Model Path')
 
 	#parser.add_argument('-tr'		,'--train-dir'		,type=str   , required=True		,help='Input data directory for training')
 	args = parser.parse_args()
@@ -30,8 +30,8 @@ if __name__ == '__main__':
 	#
 	#  Loads network and weights
 	#
-	#iwpod_net = load_model(args.model)
-	iwpod_net = tf.keras.models.load_model(args.model)
+	iwpod_net = load_model(args.model)
+	#iwpod_net = tf.keras.models.load_model(args.model)
 	
 
 	#
@@ -78,13 +78,13 @@ if __name__ == '__main__':
 	#
 	#  Runs IWPOD-NET. Returns list of LP data and cropped LP images
 	#
-	res,_ = detect_lp_width(iwpod_net, im2single(Ivehicle), WPODResolution*ASPECTRATIO, 2**4, lp_output_resolution, lp_threshold)
-	for j in range(3):
-		for i, img in enumerate(res[j+i+1]):
+	Llp, LlpImgs,_ = detect_lp_width(iwpod_net, im2single(Ivehicle), WPODResolution*ASPECTRATIO, 2**4, lp_output_resolution, lp_threshold)
+	for i, img in enumerate(LlpImgs):
+		#
 		#  Draws LP quadrilateral in input image
 		#
-			pts = res[j+i][i].pts * iwh
-			draw_losangle(Ivehicle, pts, color = (0,0,j*85.), thickness = 2)
+		pts = Llp[i].pts * iwh
+		draw_losangle(Ivehicle, pts, color = (0,0,255.), thickness = 2)
 		#
 		#  Shows each detected LP
 		#
