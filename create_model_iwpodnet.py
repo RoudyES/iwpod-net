@@ -48,7 +48,7 @@ def get_backbone(name='ResNet50'):
 			include_top=False, input_shape=[None, None, 3], alpha=0.75, weights=None
 		)
 		outs = [
-			backbone.layers[135].output
+			backbone.layers[165].output
 		]
 
 	elif name == 'MobileNetV3Large':
