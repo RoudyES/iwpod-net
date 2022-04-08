@@ -97,6 +97,7 @@ if __name__ == '__main__':
 	parser.add_argument('-lr'		,'--learning-rate'		,type=float , default = 0.001					,help='Learning rate (default = 0.001)')
 	parser.add_argument('-se'		,'--save-epochs'		,type = int , default = 2000					,help='Freqnecy for saving checkpoints (in epochs) ')
 	parser.add_argument('-size'		,'--image-size'		,type = int , default = 208					,help='Image size when training ')
+	parser.add_argument('-backbone'		,'--backbone'		,type = str , default = 'Original'					,help='Network backbone')
 	args = parser.parse_args()
 	
 
@@ -115,6 +116,7 @@ if __name__ == '__main__':
 	modeldir = args.model_dir
 	train_dir = args.train_dir 
 	val_dir = args.val_dir
+	dim = args.image_size # spatial dimension of images in training stage
 	
 	modelname = '%s/%s'  % (modeldir, args.cur_model)
 	
@@ -186,7 +188,6 @@ if __name__ == '__main__':
 	#
 	#  Additional parameters
 	#
-	dim = args.image_size # spatial dimension of images in training stage
 	lr_decayed_fn = tf.keras.optimizers.schedules.CosineDecay(learning_rate, MaxEpochs * (len(Data))//batch_size,)
 	opt = Adam(learning_rate = lr_decayed_fn) # Optimizer -- can change
 

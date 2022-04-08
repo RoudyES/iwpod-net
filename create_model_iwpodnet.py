@@ -1,3 +1,4 @@
+from black import out
 from regex import X
 from tensorflow.keras.layers import Conv2D, MaxPooling2D, BatchNormalization, Add, Activation, Concatenate, Input
 from tensorflow.keras.models import Model
@@ -44,6 +45,46 @@ def get_backbone(name='ResNet50'):
 		outs = [
 			backbone.get_layer("conv4_block6_out").output
 		]
+
+	elif name == 'MobileNetV3Small':
+		backbone = tf.keras.applications.MobileNetV3Small(
+			include_top=False, input_shape=[None, None, 3], alpha=0.75
+		)
+		outs = [
+			backbone.layers[135].output
+		]
+
+	elif name == 'MobileNetV3Large':
+		backbone = tf.keras.applications.MobileNetV3Large(
+			include_top=False, input_shape=[None, None, 3], alpha=0.75
+		)
+		outs = [
+			backbone.layers[198].output
+		]
+
+	elif name == 'Original':
+		input_layer = Input(shape=(None,None,3),name='input')
+		x = conv_batch(input_layer, 16, 3)
+		x = conv_batch(x, 16, 3)
+		x = MaxPooling2D(pool_size=(2,2))(x)
+		x = conv_batch(x, 32, 3)
+		x = res_block(x, 32)
+		x = MaxPooling2D(pool_size=(2,2))(x)
+		x = conv_batch(x, 64, 3)
+		x = res_block(x,64)
+		x = res_block(x,64)
+		x = MaxPooling2D(pool_size=(2,2))(x)
+		x = conv_batch(x, 64, 3)
+		x = res_block(x,64)
+		x = res_block(x,64)
+		x = MaxPooling2D(pool_size=(2,2))(x)
+		x = conv_batch(x, 128, 3)
+		x = res_block(x,128)
+		x = res_block(x,128)
+		x = res_block(x,128)
+		x = res_block(x,128)
+		backbone = tf.keras.Model(inputs=input_layer,outputs=x)
+		outs=[backbone.outputs]
 	return tf.keras.Model(
 		inputs=backbone.inputs, outputs=outs
 	)
@@ -124,7 +165,7 @@ def buildModel(backboneName='ResNet50'):
 
 
 
-def create_model_iwpodnet():
+def create_model_iwpodnet(backboneName='Original'):
 	#
 	#  Creates additonal layers to discriminate the tasks of detection and
 	#  localization. Can freeze common layers and train specialized layers
@@ -153,8 +194,9 @@ def create_model_iwpodnet():
 	# x = res_block(x,128)
 	# x = res_block(x,128)
 	# x = build_head(x)
-
-	return buildModel(backboneName='ResNet50')
+	model = buildModel(backboneName=backboneName)
+	model.summary()
+	return model
 
 
 if __name__ == '__main__':
