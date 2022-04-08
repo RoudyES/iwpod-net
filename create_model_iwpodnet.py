@@ -81,7 +81,7 @@ def get_backbone(name='ResNet50'):
 		x = res_block(x,128)
 		x = res_block(x,128)
 		backbone = tf.keras.Model(inputs=input_layer,outputs=x)
-		outs=[backbone.outputs]
+		outs=backbone.outputs
 	return tf.keras.Model(
 		inputs=backbone.inputs, outputs=outs
 	)
