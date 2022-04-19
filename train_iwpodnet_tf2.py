@@ -248,12 +248,13 @@ if __name__ == '__main__':
 	                      verbose = 1,
 						  use_multiprocessing = True,
 						  validation_freq = validation_frequency,
+						  validation_batch_size = batch_size,
 						  workers = cores,
 	                      validation_data = val_generator,
 	                      callbacks=[ckpt])  
 
 
-	print('Finished to train the model')
+	print('Finished training the model')
 	
 	#
 	#  Saves training details to excel file
