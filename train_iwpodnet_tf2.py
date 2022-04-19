@@ -259,8 +259,8 @@ if __name__ == '__main__':
 	#
 	#  Saves training details to excel file
 	#
-	df = pd.DataFrame(history.history)
-	df.to_excel(model_path_final + '.xlsx')
+	#df = pd.DataFrame(history.history)
+	#df.to_excel(model_path_final + '.xlsx')
 	
 	#
 	#  Saves trained weights and model (TF2) format
