@@ -94,6 +94,7 @@ if __name__ == '__main__':
 	parser.add_argument('-tr'		,'--train-dir'			,type=str   , default = 'train_dir'			,help='Input data directory for training')
 	parser.add_argument('-val'		,'--val-dir'			,type=str   , default = 'val'			,help='Input data directory for validation')
 	parser.add_argument('-e'		,'--epochs'				,type=int   , default = 60000					,help='Number of epochs (default = 1.500)')
+	parser.add_argument('-vf'		,'--validation-frequency'				,type=int   , default = 10					,help='Number of epochs to train before validating')
 	parser.add_argument('-bs'		,'--batch-size'			,type=int   , default = 52						,help='Mini-batch size (default = 64)')
 	parser.add_argument('-lr'		,'--learning-rate'		,type=float , default = 0.001					,help='Learning rate (default = 0.001)')
 	parser.add_argument('-se'		,'--save-epochs'		,type = int , default = 2000					,help='Freqnecy for saving checkpoints (in epochs) ')
@@ -107,6 +108,7 @@ if __name__ == '__main__':
 	#
 	
 	MaxEpochs = args.epochs
+	validation_frequency = args.validation_frequency
 	batch_size 	= args.batch_size
 	learning_rate = args.learning_rate
 	save_epochs = args.save_epochs			
@@ -244,6 +246,8 @@ if __name__ == '__main__':
 	                      steps_per_epoch = np.floor(len(Data)/batch_size),
 	                      epochs = MaxEpochs, 
 	                      verbose = 1,
+						  use_multiprocessing = True,
+						  validation_freq = validation_frequency,
 						  workers = cores,
 	                      validation_data = val_generator,
 	                      callbacks=[ckpt])  
