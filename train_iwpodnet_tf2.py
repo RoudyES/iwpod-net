@@ -25,6 +25,7 @@ from os import makedirs
 from src.label import readShapes, Shape
 from src.loss import iwpodnet_loss
 from src.utils import image_files_from_folder
+from IoU_Callback import IoUCallback
 from src.data_generator_tf2 import ALPRDataGenerator
 from create_model_iwpodnet import create_model_iwpodnet
 from tensorflow.keras.callbacks import LearningRateScheduler
@@ -251,7 +252,7 @@ if __name__ == '__main__':
 						  validation_batch_size = batch_size,
 						  workers = cores,
 	                      validation_data = val_generator,
-	                      callbacks=[ckpt])  
+	                      callbacks=[ckpt, IoUCallback(train_dir, val_dir, frequency=2)])  
 
 
 	print('Finished training the model')
