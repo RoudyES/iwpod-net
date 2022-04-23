@@ -3,6 +3,7 @@ import statistics
 import numpy as np
 from shapely.geometry import Polygon
 import os
+import os.path
 import cv2
 from src.keras_utils import detect_lp_width
 from src.utils	import im2single
@@ -27,6 +28,8 @@ class IoUCallback(tf.keras.callbacks.Callback):
             for root, dirs, files in os.walk(self.trainDir):
                 for filename in files:
                     fnamewoext = filename.split('.')[0]
+                    if not os.path.isfile(root + '/' + fnamewoext+'.txt'):
+                        continue
                     ext = filename.split('.')[1]
                     pts = None
                     labelPoly = None
@@ -46,15 +49,20 @@ class IoUCallback(tf.keras.callbacks.Callback):
                             label[:4] = label[:4] * img.shape[1]
                             label[4:] = label[4:] * img.shape[0]
                             labelPoly = Polygon([(label[0], label[4]), (label[1], label[5]), (label[2], label[6]), (label[3],label[7])])
-                        intersect = predictionPoly.intersection(labelPoly).area
-                        union = predictionPoly.union(labelPoly).area
-                        iou = intersect / union
-                        trainIous.append(iou)
+                        if predictionPoly is  not None:
+                            intersect = predictionPoly.intersection(labelPoly).area
+                            union = predictionPoly.union(labelPoly).area
+                            iou = intersect / union
+                            trainIous.append(iou)
+                        else:
+                            trainIous.append(0)
             print('Mean IOU of train set: ' + str(statistics.fmean(trainIous)))
             if self.valDir is not None:
                 for root, dirs, files in os.walk(self.valDir):
                     for filename in files:
                         fnamewoext = filename.split('.')[0]
+                        if not os.path.isfile(root + '/' + fnamewoext+'.txt'):
+                            continue
                         ext = filename.split('.')[1]
                         pts = None
                         labelPoly = None
@@ -74,9 +82,12 @@ class IoUCallback(tf.keras.callbacks.Callback):
                                 label[:4] = label[:4] * img.shape[1]
                                 label[4:] = label[4:] * img.shape[0]
                                 labelPoly = Polygon([(label[0], label[4]), (label[1], label[5]), (label[2], label[6]), (label[3],label[7])])
-                            intersect = predictionPoly.intersection(labelPoly).area
-                            union = predictionPoly.union(labelPoly).area
-                            iou = intersect / union
-                            valIous.append(iou)
+                            if predictionPoly is  not None:
+                                intersect = predictionPoly.intersection(labelPoly).area
+                                union = predictionPoly.union(labelPoly).area
+                                iou = intersect / union
+                                valIous.append(iou)
+                            else:
+                                valIous.append(0)
             print('Mean IOU of val set: ' + str(statistics.fmean(valIous)))
 
