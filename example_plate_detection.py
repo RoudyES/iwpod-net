@@ -54,7 +54,8 @@ def predict(imgPath, args, outputName = '1', outputPath = 'output'):
 		#
 		#  Shows original image with deteced plates (quadrilateral)
 		#
-		os.makedirs(outputPath, exist_ok=False)
+		if not os.path.exists(outputPath):
+			os.makedirs(outputPath, exist_ok=False)
 		cv2.imwrite(outputPath + '/' + outputName + '.jpg', Ivehicle)
 		#cv2.waitKey()
 		#cv2.destroyAllWindows()
