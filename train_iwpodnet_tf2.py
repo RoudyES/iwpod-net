@@ -252,7 +252,7 @@ if __name__ == '__main__':
 						  validation_batch_size = batch_size,
 						  workers = cores,
 	                      validation_data = val_generator,
-	                      callbacks=[ckpt, IoUCallback(train_dir, val_dir, frequency=2)])  
+	                      callbacks=[ckpt])  
 
 
 	print('Finished training the model')
