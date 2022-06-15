@@ -155,28 +155,28 @@ if __name__ == '__main__':
 	for file in Files:
 		labfile = splitext(file)[0] + '.txt'
 		if isfile(labfile):
-			I = cv2.imread(file)
-			if I.shape[0] < 80:
-				continue
-			if I.shape[1] < 80:
-				continue
+			#I = cv2.imread(file)
+			#if I.shape[0] < 80:
+			#	continue
+			#if I.shape[1] < 80:
+			#	continue
 
 			L = readShapes(labfile)
 			if len(L) > 0:
-				Data.append([I, L])
+				Data.append([file, L])
 			ann_files += 1
 	for file in FilesVal:
 		labfile = splitext(file)[0] + '.txt'
 		if isfile(labfile):
-			I = cv2.imread(file)
-			if I.shape[0] < 80:
-				continue
-			if I.shape[1] < 80:
-				continue
+			#I = cv2.imread(file)
+			#if I.shape[0] < 80:
+			#	continue
+			#if I.shape[1] < 80:
+			#	continue
 
 			L = readShapes(labfile)
 			if len(L) > 0:
-				DataVal.append([I, L])
+				DataVal.append([file, L])
 			ann_filesVal += 1
 		#else:
 			#

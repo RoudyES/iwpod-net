@@ -1,5 +1,6 @@
 import enum
 import numpy as np
+import cv2
 
 from tensorflow import keras
 from src.sampler import augment_sample, labels2output_map
@@ -74,8 +75,9 @@ class ALPRDataGenerator(keras.utils.Sequence):
         y = np.empty((self.batch_size, self.dim//self.stride, self.dim//self.stride, 9))
         # Generate data
         for i, idx in enumerate(indexes):
+            I = cv2.imread(self.data[idx][0])
             # Store sample
-            XX, llp, ptslist = augment_sample(self.data[idx][0], self.data[idx][1], self.dim)
+            XX, llp, ptslist = augment_sample(I, self.data[idx][1], self.dim)
             YY = labels2output_map(llp, ptslist, self.dim, self.stride, alfa = 0.5)
             X[i,] = XX*self.OutputScale
             y[i,] = YY
