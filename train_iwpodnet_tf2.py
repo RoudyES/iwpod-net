@@ -193,7 +193,7 @@ if __name__ == '__main__':
 	#
 	#  Additional parameters
 	#
-	lr_decayed_fn = tf.keras.optimizers.schedules.CosineDecay(learning_rate, MaxEpochs * (len(Data))//batch_size,)
+	lr_decayed_fn = tf.keras.optimizers.schedules.CosineDecay(learning_rate, MaxEpochs * (len(Data) + len(DataVal))//batch_size,)
 	opt = Adam(learning_rate = lr_decayed_fn) # Optimizer -- can change
 
 	def get_lr_metric(optimizer):
