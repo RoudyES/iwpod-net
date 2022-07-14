@@ -15,7 +15,7 @@ def Conv(filters, kernel_size, strides=(1, 1), padding=None):
   model.add(tf.keras.layers.Conv2D(filters,kernel_size,strides))
   model.add(tf.keras.layers.BatchNormalization())
   # self.act = nn.SiLU() if act is True else (act if isinstance(act, nn.Module) else nn.Identity())
-  model.add(tf.keras.layers.Activation('silu'))
+  model.add(tf.keras.layers.Activation('swish'))
   return model
 
 def MP(_kernel_size=(2, 2)):
@@ -127,9 +127,7 @@ def get_backbone(name='ResNet50'):
 		concat_5 = Concat()([a,b,c,d])
 		a = Conv(1024, 1, 1)(concat_5)
 		backbone = tf.keras.Model(inputs=input,outputs=a)
-		outs = [
-			backbone.outputs
-		]
+		outs = backbone.outputs
 
 	elif name == 'Original':
 		input_layer = Input(shape=(None,None,3),name='input')
