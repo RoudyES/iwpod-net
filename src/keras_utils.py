@@ -33,7 +33,7 @@ def load_model(path,custom_objects={},verbose=0):
 
 
 
-def detect_lp_width(model, I,  MAXWIDTH, net_step, out_size, threshold):
+def detect_lp_width(model, I,  MAXWIDTH, net_step, out_size, threshold, trainSize = 640):
 	
 	#
 	#  Resizes input image and run IWPOD-NET
@@ -65,17 +65,17 @@ def detect_lp_width(model, I,  MAXWIDTH, net_step, out_size, threshold):
 	#
 	# "Decodes" network result to find the quadrilateral corners of detected plates 
 	#
-	L,TLps = reconstruct_new (I, Iresized, Yr, out_size, threshold)
+	L,TLps = reconstruct_new (I, Iresized, Yr, out_size, threshold, trainSize)
 
 	return L,TLps,elapsed
 
 
 
 
-def reconstruct_new(Iorig, I, Y, out_size, threshold=.9):
+def reconstruct_new(Iorig, I, Y, out_size, threshold=.9, trainSize = 640):
 
 	net_stride 	= 2**4 
-	side 	= ((208. + 40.)/2.)/net_stride # based on rescaling of training data
+	side 	= ((trainSize + 40.)/2.)/net_stride # based on rescaling of training data
 
 	Probs = Y[...,0]
 	Affines = Y[...,-6:]  # gets the last six coordinates related to the Affine transform

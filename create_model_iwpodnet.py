@@ -3,6 +3,29 @@ from tensorflow.keras.models import Model
 import tensorflow as tf
 
 
+def autopad(k, p=None):  # kernel, padding
+  # Pad to 'same'
+  if p is None:
+      p = k // 2 if isinstance(k, int) else [x // 2 for x in k]  # auto-pad
+  return p
+
+def Conv(filters, kernel_size, strides=(1, 1), padding=None):
+  model = keras.Sequential()
+  model.add(layers.ZeroPadding2D(autopad(kernel_size,padding)))
+  model.add(layers.Conv2D(filters,kernel_size,strides))
+  model.add(layers.BatchNormalization())
+  # self.act = nn.SiLU() if act is True else (act if isinstance(act, nn.Module) else nn.Identity())
+  model.add(layers.Activation('silu'))
+  return model
+
+def MP(_kernel_size=(2, 2)):
+  mp = layers.MaxPool2D(pool_size=_kernel_size, strides=_kernel_size)
+  return mp
+
+def Concat(dimension=-1):
+  concat = layers.Concatenate(axis=dimension)
+  return concat
+
 def res_block(x,sz,filter_sz=3,in_conv_size=1):
 	xi  = x
 	for i in range(in_conv_size):
@@ -57,6 +80,55 @@ def get_backbone(name='ResNet50'):
 		)
 		outs = [
 			backbone.layers[198].output
+		]
+
+	elif name == 'Yolov7':
+		input = tf.keras.Input((None,None,3))
+		a = Conv(32, 3, 1)(input)
+		a = Conv(64, 3, 2)(a)
+		a = Conv(64, 3, 1)(a)  
+		b = Conv(128, 3, 2)(a)
+		d = Conv(64, 1, 1)(b)
+		c = Conv(64, 1, 1)(b)
+		a = Conv(64, 3, 1)(c)
+		b = Conv(64, 3, 1)(a)
+		a = Conv(64, 3, 1)(b)
+		a = Conv(64, 3, 1)(a)
+		concat_1 = Concat()([a,b,c,d])
+
+		a = Conv(256, 1, 1)(concat_1)
+		mp_1 = MP()(a)
+		b = Conv(128, 1, 1)(mp_1)
+		a = Conv(128, 1, 1)(a)
+		a = Conv(128, 3, 2)(a)
+		concat_2 = Concat()([a,b])
+
+		d = Conv(128, 1, 1)(concat_2)
+		c = Conv(128, 1, 1)(concat_2)
+		a = Conv(128, 3, 1)(c)
+		b = Conv(128, 3, 1)(a)
+		a = Conv(128, 3, 1)(b)
+		a = Conv(128, 3, 1)(a)
+		concat_3 = Concat()([a,b,c,d])
+
+		b = Conv(512, 1, 1)(concat_3)
+		mp_2 = MP()(b)
+		c = Conv(256, 1, 1)(mp_2)
+		a = Conv(256, 1, 1)(b)
+		a = Conv(256, 3, 2)(a)
+		concat_4 = Concat()([a,c])
+
+		d = Conv(256, 1, 1)(concat_4)
+		c = Conv(256, 1, 1)(concat_4)
+		a = Conv(256, 3, 1)(c)
+		b = Conv(256, 3, 1)(a)
+		a = Conv(256, 3, 1)(b)
+		a = Conv(256, 3, 1)(a)
+		concat_5 = Concat()([a,b,c,d])
+		a = Conv(1024, 1, 1)(concat_5)
+		backbone = tf.keras.Model(inputs=input,outputs=a)
+		outs = [
+			backbone.outputs
 		]
 
 	elif name == 'Original':
