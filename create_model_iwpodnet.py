@@ -10,20 +10,20 @@ def autopad(k, p=None):  # kernel, padding
   return p
 
 def Conv(filters, kernel_size, strides=(1, 1), padding=None):
-  model = keras.Sequential()
-  model.add(layers.ZeroPadding2D(autopad(kernel_size,padding)))
-  model.add(layers.Conv2D(filters,kernel_size,strides))
-  model.add(layers.BatchNormalization())
+  model = tf.keras.Sequential()
+  model.add(tf.keras.layers.ZeroPadding2D(autopad(kernel_size,padding)))
+  model.add(tf.keras.layers.Conv2D(filters,kernel_size,strides))
+  model.add(tf.keras.layers.BatchNormalization())
   # self.act = nn.SiLU() if act is True else (act if isinstance(act, nn.Module) else nn.Identity())
-  model.add(layers.Activation('silu'))
+  model.add(tf.keras.layers.Activation('silu'))
   return model
 
 def MP(_kernel_size=(2, 2)):
-  mp = layers.MaxPool2D(pool_size=_kernel_size, strides=_kernel_size)
+  mp = tf.keras.layers.MaxPool2D(pool_size=_kernel_size, strides=_kernel_size)
   return mp
 
 def Concat(dimension=-1):
-  concat = layers.Concatenate(axis=dimension)
+  concat = tf.keras.layers.Concatenate(axis=dimension)
   return concat
 
 def res_block(x,sz,filter_sz=3,in_conv_size=1):
